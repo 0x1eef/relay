@@ -1,0 +1,5 @@
+.env
+.bundle/gems
+node_modules/
+bundle.js*
+public/g/
