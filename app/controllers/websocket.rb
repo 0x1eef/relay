@@ -25,7 +25,6 @@ module Controller
     end
 
     def read(conn, sess, message)
-
       write(conn, event: "status", message: "Thinking…")
       if sess.messages.empty?
         sess.talk initial_prompt(message)

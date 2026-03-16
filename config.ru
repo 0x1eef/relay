@@ -18,7 +18,7 @@ llms      = {
   "anthropic" => anthropic,
   "deepseek" => deepseek,
   "xai" => xai
-}
+}.transform_values(&:persist!)
 
 run lambda { |env|
   case env["PATH_INFO"]
