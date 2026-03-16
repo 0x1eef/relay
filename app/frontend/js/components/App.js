@@ -1,14 +1,14 @@
 import React, {useEffect, useLayoutEffect, useRef, useState} from "react"
+
 import {
   AssistantMessage,
   StreamingMessage,
   SystemMessage,
   UserMessage
 } from "~/js/components/Messages"
-import ModelSelect from "~/js/components/ModelSelect"
-import ProviderSelect from "~/js/components/ProviderSelect"
-import useModels from "~/js/hooks/useModels"
-import useWebSocket from "~/js/hooks/useWebSocket"
+
+import {ModelSelect, ProviderSelect} from "~/js/components/Select"
+import {useModels, useWebSocket} from "~/js/hooks"
 
 export default function App() {
   const [message, setMessage] = useState("")
