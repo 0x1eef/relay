@@ -3,8 +3,8 @@ import {marked} from "marked"
 import ModelSelect from "~/js/components/ModelSelect"
 import ProviderSelect from "~/js/components/ProviderSelect"
 import useModels from "~/js/hooks/useModels"
+import useWebSocket from "~/js/hooks/useWebSocket"
 
-const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
 const origin = window.location.origin
 
 const stripImages = (markdown) => {
@@ -37,109 +37,16 @@ const AssistantMessage = React.memo(function AssistantMessage({markdown}) {
 })
 
 export default function App() {
-  const [status, setStatus] = useState("connecting")
   const [message, setMessage] = useState("")
-  const [entries, setEntries] = useState([])
-  const [streaming, setStreaming] = useState("")
   const [provider, setProvider] = useState("openai")
-  const {error: modelsError, loading: modelsLoading, model, models, setModel} = useModels(provider)
-  const socketRef = useRef(null)
+  const {loading: modelsLoading, model, models, setModel} = useModels(provider)
+  const {entries, send, status, streaming} = useWebSocket(provider, model)
   const streamRef = useRef(null)
-
-  const say = (text) => {
-    setEntries((prev) => [...prev, {kind: "system", text}])
-  }
-
-  const tell = (text) => {
-    setEntries((prev) => [...prev, {kind: "user", text}])
-  }
 
   const scrollToBottom = () => {
     const stream = streamRef.current
-    if (stream) {
-      stream.scrollTop = stream.scrollHeight
-    }
+    if (stream) stream.scrollTop = stream.scrollHeight
   }
-
-  useEffect(() => {
-    if (modelsLoading) {
-      setStatus("loading models")
-    } else if (modelsError) {
-      setStatus("model error")
-      say("client: failed to load models")
-    } else if (models.length > 0 && status === "loading models") {
-      setStatus("ready")
-    }
-  }, [models.length, modelsError, modelsLoading, status])
-
-  useEffect(() => {
-    if (!model) {
-      return
-    }
-    const socket = new WebSocket(
-      `${protocol}//${window.location.host}/ws?provider=${encodeURIComponent(provider)}&model=${encodeURIComponent(model)}`
-    )
-    socketRef.current = socket
-    setStatus("connecting")
-
-    const stream = (chunk) => {
-      setStreaming((prev) => prev + chunk)
-    }
-
-    const finish = () => {
-      setStreaming((current) => {
-        if (current) {
-          setEntries((prev) => [...prev, {kind: "assistant", markdown: current}])
-        }
-        return ""
-      })
-    }
-
-    socket.addEventListener("open", () => {
-      setStatus("ready")
-    })
-
-    socket.addEventListener("close", () => {
-      setStatus("closed")
-    })
-
-    socket.addEventListener("error", () => {
-      setStatus("error")
-      say("client: socket error")
-    })
-
-    socket.addEventListener("message", (event) => {
-      try {
-        const payload = JSON.parse(event.data)
-        switch (payload.event) {
-          case "welcome":
-            say(`server: connected (${payload.provider || provider}${payload.model ? ` / ${payload.model}` : ""})`)
-            break
-          case "status":
-            setStatus(payload.message)
-            break
-          case "delta":
-            stream(payload.message)
-            break
-          case "done":
-            finish()
-            setStatus("ready")
-            break
-          case "error":
-            setStreaming("")
-            setStatus("error")
-            say("server: server error")
-            break
-          default:
-            break
-        }
-      } catch {
-        say("client: recv failed")
-      }
-    })
-
-    return () => socket.close()
-  }, [provider, model])
 
   useLayoutEffect(() => {
     scrollToBottom()
@@ -147,34 +54,18 @@ export default function App() {
 
   useEffect(() => {
     const stream = streamRef.current
-    if (!stream) {
-      return
-    }
-
+    if (!stream) return
     const onLoad = (event) => {
-      if (event.target instanceof HTMLImageElement) {
-        scrollToBottom()
-      }
+      if (event.target instanceof HTMLImageElement) scrollToBottom()
     }
-
     stream.addEventListener("load", onLoad, true)
     return () => stream.removeEventListener("load", onLoad, true)
   }, [])
 
   const onSubmit = (event) => {
     event.preventDefault()
-    const socket = socketRef.current
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
-      say("client: socket is not open")
-      return
-    }
-    if (!message) {
-      return
-    }
-    setStatus("waiting")
-    tell(message)
-    socket.send(message)
-    setMessage("")
+    if (!message) return
+    if (send(message)) setMessage("")
   }
 
   const onProviderChange = (event) => {
