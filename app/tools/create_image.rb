@@ -5,12 +5,12 @@ module Tool
     name "create-image"
     description "Create a generated image"
     param :prompt, String, "The prompt", required: true
-    param :provider, Enum["openai", "gemini", "xai"], "The provider", default: "gemini"
+    param :provider, Enum["openai", "gemini", "xai"], "The provider", default: "xai"
 
     ##
     # Returns a HTML link for an image
     # @return [Hash]
-    def call(prompt:, provider: "gemini")
+    def call(prompt:, provider: "xai")
       file = "#{SecureRandom.hex}.png"
       key  = ENV["#{provider.upcase}_SECRET"]
       llm  = LLM.method(provider).call(key:)
