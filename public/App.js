@@ -4,10 +4,40 @@ import {marked} from "marked"
 const protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
 const origin = window.location.origin
 
+const stripImages = (markdown) => {
+  return markdown
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, (_match, alt) => {
+      return `\n\n> [image${alt ? `: ${alt}` : ""} loading]\n\n`
+    })
+    .replace(/<img\b[^>]*alt=(['"])(.*?)\1[^>]*>/gi, (_match, _quote, alt) => {
+      return `\n\n> [image${alt ? `: ${alt}` : ""} loading]\n\n`
+    })
+    .replace(/<img\b[^>]*>/gi, "\n\n> [image loading]\n\n")
+}
+
+const render = (markdown, {images = true} = {}) => {
+  const content = images ? markdown : stripImages(markdown)
+  return marked.parse(content.replaceAll("sandbox:/", `${origin}/`))
+}
+
+const AssistantMessage = React.memo(function AssistantMessage({markdown}) {
+  return (
+    <div className="mt-3 flex first:mt-0">
+      <div
+        className="max-w-[85%] rounded-3xl rounded-bl-lg bg-white px-4 py-3 text-zinc-900 shadow-sm ring-1 ring-zinc-200"
+        dangerouslySetInnerHTML={{
+          __html: `<div class="assistant-content max-w-none whitespace-normal [&_p]:my-0 [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:bg-zinc-100 [&_pre]:p-3 [&_code]:font-mono [&_blockquote]:border-l-4 [&_blockquote]:border-zinc-300 [&_blockquote]:pl-4 [&_blockquote]:text-zinc-600 [&_img]:mt-2 [&_img]:h-auto [&_img]:max-h-[32rem] [&_img]:w-full [&_img]:max-w-2xl [&_img]:rounded-2xl [&_img]:object-contain">${render(markdown)}</div>`
+        }}
+      />
+    </div>
+  )
+})
+
 export default function App() {
   const [status, setStatus] = useState("connecting")
   const [message, setMessage] = useState("")
   const [entries, setEntries] = useState([])
+  const [streaming, setStreaming] = useState("")
   const [provider, setProvider] = useState("openai")
   const [models, setModels] = useState([])
   const [model, setModel] = useState("")
@@ -28,10 +58,6 @@ export default function App() {
     if (stream) {
       stream.scrollTop = stream.scrollHeight
     }
-  }
-
-  const render = (markdown) => {
-    return marked.parse(markdown.replaceAll("sandbox:/", `${origin}/`))
   }
 
   useEffect(() => {
@@ -71,15 +97,15 @@ export default function App() {
     setStatus("connecting")
 
     const stream = (chunk) => {
-      setEntries((prev) => {
-        const last = prev[prev.length - 1]
-        if (last && last.kind === "assistant") {
-          return [
-            ...prev.slice(0, -1),
-            {kind: "assistant", markdown: last.markdown + chunk}
-          ]
+      setStreaming((prev) => prev + chunk)
+    }
+
+    const finish = () => {
+      setStreaming((current) => {
+        if (current) {
+          setEntries((prev) => [...prev, {kind: "assistant", markdown: current}])
         }
-        return [...prev, {kind: "assistant", markdown: chunk}]
+        return ""
       })
     }
 
@@ -110,9 +136,11 @@ export default function App() {
             stream(payload.message)
             break
           case "done":
+            finish()
             setStatus("ready")
             break
           case "error":
+            setStreaming("")
             setStatus("error")
             say("server: server error")
             break
@@ -129,7 +157,7 @@ export default function App() {
 
   useLayoutEffect(() => {
     scrollToBottom()
-  }, [entries])
+  }, [entries, streaming])
 
   useEffect(() => {
     const stream = streamRef.current
@@ -171,7 +199,7 @@ export default function App() {
 
   return (
     <main className="h-screen bg-white font-sans text-zinc-900">
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-4xl flex-col gap-4 px-4 py-6 sm:px-6">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col gap-4 px-4 py-6 sm:px-6">
         <header className="border-b border-zinc-100 pb-3 text-center">
           <p className="text-sm font-medium tracking-[0.18em] text-zinc-400 uppercase">
             easytalk
@@ -184,16 +212,7 @@ export default function App() {
         >
           {entries.map((entry, index) => {
             if (entry.kind === "assistant") {
-              return (
-                <div key={index} className="mt-3 flex first:mt-0">
-                  <div
-                    className="max-w-[85%] rounded-3xl rounded-bl-lg bg-white px-4 py-3 text-zinc-900 shadow-sm ring-1 ring-zinc-200"
-                    dangerouslySetInnerHTML={{
-                      __html: `<div class="assistant-content max-w-none whitespace-normal [&_p]:my-0 [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:bg-zinc-100 [&_pre]:p-3 [&_code]:font-mono [&_blockquote]:border-l-4 [&_blockquote]:border-zinc-300 [&_blockquote]:pl-4 [&_blockquote]:text-zinc-600 [&_img]:mt-2 [&_img]:h-auto [&_img]:max-h-[32rem] [&_img]:w-full [&_img]:max-w-2xl [&_img]:rounded-2xl [&_img]:object-contain">${render(entry.markdown)}</div>`
-                    }}
-                  />
-                </div>
-              )
+              return <AssistantMessage key={index} markdown={entry.markdown} />
             }
 
             if (entry.kind === "user") {
@@ -212,6 +231,16 @@ export default function App() {
               </div>
             )
           })}
+          {streaming ? (
+            <div className="mt-3 flex">
+              <div
+                className="max-w-[85%] rounded-3xl rounded-bl-lg bg-white px-4 py-3 text-zinc-900 shadow-sm ring-1 ring-zinc-200"
+                dangerouslySetInnerHTML={{
+                  __html: `<div class="assistant-content max-w-none whitespace-normal [&_p]:my-0 [&_pre]:overflow-x-auto [&_pre]:rounded-2xl [&_pre]:bg-zinc-100 [&_pre]:p-3 [&_code]:font-mono [&_blockquote]:border-l-4 [&_blockquote]:border-zinc-300 [&_blockquote]:pl-4 [&_blockquote]:text-zinc-600">${render(streaming, {images: false})}</div>`
+                }}
+              />
+            </div>
+          ) : null}
         </div>
         <p className="text-center text-sm text-zinc-500">
           Status: <span className="font-semibold text-zinc-700">{status}</span>
