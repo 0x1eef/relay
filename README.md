@@ -1,11 +1,8 @@
 ## About
 
-EasyTalk is a demo app for [llm.rb](https://github.com/llmrb/llm.rb) that shows
-how to build a complex streaming chat interface with multiple providers and tools.
-It is implemented as a Rack application with Falcon and async-websocket support, and
-the frontend is built with React and webpack. It supports OpenAI, Gemini, Anthropic,
-xAI and DeepSeek, and you can add your own tools by following the example of
-[create_image.rb](./app/tools/create_image.rb). Enjoy :)
+EasyTalk is a small chat app built with [llm.rb](https://github.com/llmrb/llm.rb).
+It demonstrates streaming over WebSockets, tool calls, provider switching, and
+model selection in a simple Rack app with a small React frontend. Enjoy :)
 
 ## Features
 
