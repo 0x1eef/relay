@@ -25,6 +25,25 @@ export default function App () {
     if (stream) stream.scrollTop = stream.scrollHeight
   }
 
+  const onSubmit = (event) => {
+    event.preventDefault()
+    if (!message) return
+    if (send(message)) setMessage('')
+  }
+
+  const onProviderChange = (event) => {
+    setSession((prev) => ({
+      ...prev,
+      provider: event.target.value,
+      model: '',
+      cost: ''
+    }))
+  }
+
+  const onModelChange = (event) => {
+    setSession((prev) => ({...prev, model: event.target.value, cost: ''}))
+  }
+
   useLayoutEffect(() => {
     scrollToBottom()
   }, [entries, streaming])
@@ -43,28 +62,16 @@ export default function App () {
     inputRef.current?.focus()
   }, [])
 
-  const onSubmit = (event) => {
-    event.preventDefault()
-    if (!message) return
-    if (send(message)) setMessage('')
-  }
-
-  const onProviderChange = (event) => {
-    setSession((prev) => ({
-      ...prev,
-      provider: event.target.value,
-      model: '',
-      cost: ''
-    }))
-  }
-
-  const onModelChange = (event) => {
-    setSession((prev) => ({
-      ...prev,
-      model: event.target.value,
-      cost: ''
-    }))
-  }
+  useEffect(() => {
+    switch(session.provider) {
+      case 'openai':
+        setSession((prev) => ({...prev, model: 'gpt-5.4'}))
+        break;
+      case 'gemini':
+        setSession((prev) => ({...prev, model: 'gemini-pro-latest'}))
+        break;
+    }
+  }, [session.provider])
 
   return (
     <main className='h-screen bg-white font-sans text-zinc-900'>

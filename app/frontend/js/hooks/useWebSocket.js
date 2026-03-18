@@ -10,15 +10,6 @@ export default function useWebSocket ({session, setSession}) {
   const [streaming, setStreaming] = useState('')
   const [socket, setSocket] = useState(null)
 
-  const _setModel = (payload) => {
-    if (payload.model && payload.model !== session.model) {
-      setSession((prev) => ({
-        ...prev,
-        model: payload.model
-      }))
-    }
-  }
-
   const say = (text) => {
     setEntries((prev) => [...prev, { kind: 'system', text }])
   }
@@ -41,8 +32,7 @@ export default function useWebSocket ({session, setSession}) {
   const onMessage = (payload) => {
     switch (payload.event) {
       case 'welcome':
-        _setModel(payload)
-        say(`server: connected (${payload.provider} / ${payload.model})`)
+        say(`server: connected (${session.provider} / ${session.model})`)
         break
       case 'status':
         setStatus(payload.message)
@@ -53,15 +43,9 @@ export default function useWebSocket ({session, setSession}) {
       case 'done':
         finish()
         if (payload.cost === 'unknown') {
-          setSession((prev) => ({
-            ...prev,
-            cost: payload.cost
-          }))
+          setSession((prev) => ({...prev, cost: payload.cost}))
         } else {
-          setSession((prev) => ({
-            ...prev,
-            cost: `$${payload.cost}`
-          }))
+          setSession((prev) => ({...prev, cost: `$${payload.cost}`}))
         }
         setStatus('ready')
         break
