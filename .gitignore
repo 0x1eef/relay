@@ -2,4 +2,5 @@
 .bundle/gems
 node_modules/
 public/
+tmp/
 !public/g/.gitkeep
