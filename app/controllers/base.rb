@@ -44,5 +44,12 @@ module Controller
     def llm
       @llms[provider] || @llms["openai"]
     end
+
+    ##
+    # @return [String]
+    #  Returns the root path
+    def root
+      @root ||= File.join __dir__, "..", ".."
+    end
   end
 end
