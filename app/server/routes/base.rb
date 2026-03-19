@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-module Server
+module Server::Routes
   class Base
     ##
     # @param [Hash] env
     #  The Rack env
-    # @return [Server::Base]
+    # @return [Server::Routes::Base]
     def initialize(roda)
       @roda = roda
     end
@@ -35,7 +35,7 @@ module Server
     # @return [String]
     #  Returns the root path
     def root
-      @root ||= File.join __dir__, "..", ".."
+      @root ||= File.join __dir__, "..", "..", ".."
     end
 
     def params
