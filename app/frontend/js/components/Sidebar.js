@@ -22,15 +22,21 @@ export function Sidebar({session, models, modelsLoading, onProviderChange, onMod
         <span className='text-center text-xs text-zinc-400'>
           {modelsLoading ? '...' : `${models.length} models`}
         </span>
-        <div className='rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center'>
-          <p className='text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-700'>
-            Session Cost
-          </p>
-          <p className='mt-1 text-2xl font-semibold text-emerald-950'>
-            {session.cost || '$0.00'}
-          </p>
-        </div>
+        <Cost cost={session.cost} />
       </div>
     </aside>
+  )
+}
+
+function Cost({cost}) {
+  return (
+    <div className='rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center'>
+      <p className='text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-700'>
+        Session Cost
+      </p>
+      <p className='mt-1 text-2xl font-semibold text-emerald-950'>
+        {cost || '$0.00'}
+      </p>
+    </div>
   )
 }
