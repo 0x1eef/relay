@@ -12,7 +12,6 @@ import {
 
 import {
   AssistantMessage,
-  StreamingMessage,
   SystemMessage,
   UserMessage
 } from '~/js/components/Messages'
@@ -101,7 +100,7 @@ export default function App () {
             if (entry.kind === 'user') { return <UserMessage key={index} text={entry.text} /> }
             if (entry.kind === 'system') { return <SystemMessage key={index} text={entry.text} /> }
           })}
-          {stream ? <StreamingMessage markdown={stream} /> : null}
+          {stream ? <AssistantMessage markdown={stream} /> : null}
         </div>
         <div className='grid grid-cols-3 gap-4 text-sm text-zinc-500'>
           <p className='flex min-h-[2.75rem] min-w-0 flex-col justify-center text-left leading-tight'>
