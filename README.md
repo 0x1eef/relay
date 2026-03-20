@@ -77,7 +77,8 @@ The SQLite database files under `db/` are local-only and ignored by git.
 - `app/server/models` contains Active Record models
 - `app/server/routes` contains the Roda-facing endpoints
 - `app/server/tools` contains LLM tool classes
-- `app/server/router.rb` dispatches `/models` and `/ws`
+- `app/server/router.rb` dispatches `/api/models`, `/api/tools`, and
+  `/api/ws`
 - `config.ru` serves generated images from `public/g` and boots the router
 
 **Development**
@@ -91,11 +92,11 @@ bundle exec rake dev:client
 ```
 
 Then open `http://localhost:9293`. The Ruby server on `9292` only
-serves `/models`, `/ws`, and generated images from `/g`.
+serves `/api/models`, `/api/ws`, and generated images from `/g`.
 
-The webpack dev server proxies `/models`, `/ws`, and `/g` back to the
-Ruby server, so image generation works in development without building
-the client bundle first.
+The webpack dev server proxies `/api/models`, `/api/tools`, `/api/ws`,
+and `/g` back to the Ruby server, so image generation works in
+development without building the client bundle first.
 
 Or run all three processes together with Foreman:
 

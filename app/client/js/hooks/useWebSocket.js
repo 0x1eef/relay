@@ -75,7 +75,7 @@ export default function useWebSocket ({session, setSession}) {
 
     let active = true
     const query = `provider=${encodeURIComponent(session.provider)}&model=${encodeURIComponent(session.model)}`
-    const socket = new WebSocket(`${protocol}//${window.location.host}/ws?${query}`)
+    const socket = new WebSocket(`${protocol}//${window.location.host}/api/ws?${query}`)
     setSocket(socket)
     setStatus('connecting')
 

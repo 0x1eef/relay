@@ -30,7 +30,7 @@ export default function useModels ({ session, setSession }) {
 
   useEffect(() => {
     const controller = new AbortController()
-    const path = `/models?provider=${encodeURIComponent(session.provider)}`
+    const path = `/api/models?provider=${encodeURIComponent(session.provider)}`
     fetch(path, { signal: controller.signal })
       .then(clear)
       .then(unmarshal)

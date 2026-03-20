@@ -64,15 +64,15 @@ module.exports = {
         target: "http://127.0.0.1:9292"
       },
       {
-        context: ["/models"],
+        context: ["/api/models"],
         target: "http://127.0.0.1:9292"
       },
       {
-        context: ["/tools"],
+        context: ["/api/tools"],
         target: "http://127.0.0.1:9292"
       },
       {
-        context: ["/ws"],
+        context: ["/api/ws"],
         target: "http://127.0.0.1:9292",
         ws: true
       }
