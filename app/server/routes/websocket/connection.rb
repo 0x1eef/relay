@@ -45,7 +45,7 @@ class Server::Routes::Websocket
       invoke(sess, sess.functions, conn)
       write(conn, event: "status", message: "Done")
       write(conn, event: "done", cost: sess.cost.to_s)
-    rescue LLM::NoSuchModelError
+    rescue LLM::NoSuchRegistryError, LLM::NoSuchModelError
       write(conn, event: "done", cost: "unknown")
     rescue StandardError => e
       write(conn, event: "status", message: "Error")
