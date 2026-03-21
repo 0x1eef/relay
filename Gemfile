@@ -7,6 +7,7 @@ gem "falcon"
 gem "bcrypt"
 gem "erubi"
 gem "llm.rb", github: "llmrb/llm.rb"
+gem "xchan.rb"
 gem "net-http-persistent"
 gem "rake"
 gem "rack"
@@ -19,6 +20,5 @@ gem "tilt"
 gem "zeitwerk"
 
 group :development do
-  gem "foreman"
   gem "standard"
 end

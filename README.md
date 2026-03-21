@@ -80,22 +80,15 @@ The SQLite database files under `db/` are local-only and ignored by git.
 
 **Development**
 
-Run the server and Sidekiq in separate shells:
+Run the full dev environment:
 
 ```sh
-bundle exec rake dev:server
-bundle exec rake dev:sidekiq
+bundle exec rake dev:start
 ```
 
 Then open `http://localhost:9292`. The Ruby server serves the HTML
 pages, `/api/models`, `/api/tools`, `/api/ws`, and generated images
 from `/g`.
-
-Or run both processes together with Foreman:
-
-```sh
-bundle exec foreman start
-```
 
 ## Sources
 

@@ -23,6 +23,7 @@ module Relay
     @public_dir ||= File.realpath File.join(__dir__, "..", "public")
   end
 
+  require_relative "../lib/relay"
   require_relative "init/database"
   require_relative "init/sidekiq"
   require_relative "init/router"
