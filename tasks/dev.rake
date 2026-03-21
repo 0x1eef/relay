@@ -2,7 +2,7 @@ namespace :dev do
   desc "Start the dev environment"
   task :start do
     monitor = Relay::TaskMonitor.new(
-      tasks: %w[dev:server dev:sidekiq dev:assets]
+      tasks: %w[assets:build assets:watch dev:server dev:sidekiq]
     )
     monitor.prefork { Relay::DB.disconnect }
     monitor.monitor
@@ -18,10 +18,5 @@ namespace :dev do
   task :sidekiq do
     sh "env $(cat .env) " \
        "bundle exec sidekiq -C app/config/sidekiq.yml -r ./app/init.rb"
-  end
-
-  desc "Watch frontend assets"
-  task :assets do
-    sh "npm --prefix app/assets run assets:watch"
   end
 end
