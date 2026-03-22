@@ -18,7 +18,7 @@ environment.
 - ⚙️ Rack application built with Falcon, Roda, and async-websocket
 - 🗃️ Sequel with built-in migrations
 - 🧵 Sidekiq workers for background jobs
-- 🧰 Built-in task monitor that that starts and supervises the full development environment (web, workers, assets)
+- 🧰 Built-in task monitor that supervises the full dev environment: web, workers, assets
 
 ## Quick start
 
