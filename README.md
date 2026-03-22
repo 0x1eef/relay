@@ -12,7 +12,7 @@ environment.
 
 ## Screencast
 
-[![Watch the Relay screencast](https://img.youtube.com/vi/A52YcO7SSyk/maxresdefault.jpg)](https://www.youtube.com/watch?v=A52YcO7SSyk)
+[![Watch the Relay screencast](https://img.youtube.com/vi/tc0Bhu4i5zw/maxresdefault.jpg)](https://www.youtube.com/watch?v=tc0Bhu4i5zw)
 
 ## Features
 
