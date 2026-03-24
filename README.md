@@ -45,7 +45,7 @@ The jukebox tool gives the LLM a small built-in playlist. It can use
 
 **Setup**
 
-Redis is required for Sidekiq support.
+Redis is used by Sidekiq but we haven't had a reason to use it yet, so it is optional for now. <br>
 SQLite is required for database support.
 
     bundle install
