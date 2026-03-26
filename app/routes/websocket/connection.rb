@@ -126,9 +126,8 @@ class Relay::Routes::Websocket
     # @return [Hash]
     #  The current token usage, maximum window, and display label
     def context_window(sess)
-      { used: sess.usage.total_tokens || 0,
-        max: sess.context_window || 0,
-        label: "#{used} / #{max} tokens" }
+      used, max = sess.usage.total_tokens || 0,  sess.context_window || 0
+      {used:, max:, label: "#{used} / #{max} tokens" }
     end
 
     ##
