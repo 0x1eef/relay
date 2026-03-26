@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Relay::Routes::Hooks
+module Relay::Hooks
   module RequireUser
     def call
       @user = Relay::Models::User[session["user_id"]]

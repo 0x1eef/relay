@@ -18,12 +18,12 @@ class Relay::Router < Roda
   # Routes
   route do |r|
     r.root do
-      ChatPage.new(self).call
+      Pages::Chat.new(self).call
     end
 
     r.is "sign-in" do
       r.get do
-        SignInPage.new(self).call
+        Pages::SignIn.new(self).call
       end
 
       r.post do
@@ -70,14 +70,6 @@ class Relay::Router < Roda
     end
   end
 
-  private
-
-  module Helper
-    def page(name, **locals)
-      view(File.join("pages", name), layout_opts: {locals:})
-    end
-  end
-
   include Relay::Routes
-  include Helper
+  include Relay::Pages
 end

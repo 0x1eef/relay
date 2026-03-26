@@ -20,7 +20,7 @@ keeping the frontend light and the architecture Ruby-centric.
 
 - 🌊 Streaming chat over WebSockets
 - 🛠️ Custom tool support via [app/tools/](app/tools)
-- 🔌 MCP server support via [app/config/mcp.yml](app/config/mcp.yml)
+- 🔌 Optional MCP server support via [app/config/mcp.yml.sample](app/config/mcp.yml.sample)
 - 🖼️ Sample image-generation tool in [create_image.rb](./app/tools/create_image.rb)
 - 📚 Sample knowledge tool in [relay_knowledge.rb](./app/tools/relay_knowledge.rb)
 - 🎵 Sample jukebox tool in [juke_box.rb](./app/tools/juke_box.rb)
@@ -99,9 +99,9 @@ available to the model alongside the built-in ones.
 
 **MCP**
 
-Relay reads MCP server configuration from `app/config/mcp.yml`.
-Use [`app/config/mcp.yml.sample`](app/config/mcp.yml.sample) as the
-starting point.
+Relay reads MCP server configuration from `app/config/mcp.yml` when the
+file is present. Use [`app/config/mcp.yml.sample`](app/config/mcp.yml.sample)
+as the starting point.
 
 You can add your own stdio MCP servers by appending entries under
 `stdio`. Each server entry includes:
@@ -137,7 +137,8 @@ Setup:
 4. Restart Relay.
 
 Once configured, Relay starts the MCP servers for the chat session and
-adds their tools to the available tool list.
+adds their tools to the available tool list. If `app/config/mcp.yml`
+is absent, Relay starts without any MCP servers.
 
 ## Architecture
 
@@ -160,11 +161,12 @@ Some important notes:
 The codebase is organized by responsibility:
 
 - `app/init` contains boot and framework setup
+- `app/hooks` contains reusable request hooks
+- `app/pages` contains full-page renderers
 - `app/tools` contains tools
 - `app/prompts` contains system prompt
 - `app/models` contains Sequel models
 - `app/routes` contains route classes and WebSocket handlers
-- `app/routes/hooks` contains reusable route hooks
 - `app/views` contains HTML templates and partials
 - `app/workers` contains Sidekiq workers
 - `db/` contains database configuration and migrations
@@ -176,14 +178,17 @@ The codebase is organized by responsibility:
 A route is a class that inherits from `Relay::Routes::Base` and
 implements `call`. `Base` delegates missing methods to the current
 Roda instance, so route classes can use helpers like `view`, `partial`,
-`request`, `response`, `session`, and `params`:
+`request`, `response`, `session`, and `params`.
+
+Routes also expose `r` as a small alias for `request`, which mirrors the
+way Roda route blocks commonly refer to the request object:
 
 ```ruby
 # app/routes/some_route.rb
 module Relay::Routes
   class SomeRoute < Base
     def call
-      "hello world"
+      r.redirect("/some-other-route")
     end
   end
 end
@@ -196,22 +201,49 @@ r.on "some-route" do
 end
 ```
 
+**Page**
+
+A page is a class that inherits from `Relay::Pages::Base` and renders a
+full page from `app/views/pages`. Like routes, pages delegate missing
+methods to the current Roda instance, but they are intended for page
+rendering rather than request actions:
+
+```ruby
+# app/pages/chat.rb
+module Relay::Pages
+  class Chat < Base
+    prepend Relay::Hooks::RequireUser
+
+    def call
+      response["content-type"] = "text/html"
+      page("chat", title: "Relay")
+    end
+  end
+end
+
+# app/init/router.rb
+r.root do
+  Pages::Chat.new(self).call
+end
+```
+
 **Hooks**
 
-Routes can also be composed with hooks. A hook is an ordinary Ruby
-module, usually stored under `app/routes/hooks`, that is prepended onto
-a route class.
+A hook is an ordinary Ruby module, usually stored under `app/hooks`,
+that uses `prepend` to act as a hook for page and route objects.
+Hooks implement `call` and control request flow similarly to a before
+filter: they decide whether to let the request proceed by calling
+`super`, or halt the request by returning or redirecting instead.
 
 Hooks are named as verbs that describe the behavior they enforce, such
 as `RequireUser`.
 
-They behave like lightweight before filters, but stay in plain Ruby.
 Each hook typically defines `call`, performs its setup or guard logic,
 and then calls `super` to continue to the next prepended hook or, once
-no hooks remain, the route itself:
+no hooks remain, the underlying page or route:
 
 ```ruby
-module Relay::Routes::Hooks
+module Relay::Hooks
   module RequireUser
     def call
       @user = Relay::Models::User[session["user_id"]]
@@ -220,9 +252,9 @@ module Relay::Routes::Hooks
   end
 end
 
-module Relay::Routes
-  class ChatPage < Base
-    prepend Hooks::RequireUser
+module Relay::Pages
+  class Chat < Base
+    prepend Relay::Hooks::RequireUser
 
     def call
       page("chat", title: "Relay")

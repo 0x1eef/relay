@@ -2,7 +2,7 @@
 
 module Relay::Routes
   class ListTools < Base
-    prepend Hooks::RequireUser
+    prepend Relay::Hooks::RequireUser
 
     ##
     # @return [String]

@@ -2,7 +2,7 @@
 
 module Relay::Routes
   class ListProviders < Base
-    prepend Hooks::RequireUser
+    prepend Relay::Hooks::RequireUser
 
     def call
       partial("fragments/providers")

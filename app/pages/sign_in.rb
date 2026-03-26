@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
-module Relay::Routes
-  class SignInPage < Base
+module Relay::Pages
+  ##
+  # Renders the sign-in page.
+  class SignIn < Base
+    ##
+    # @return [String]
     def call
       response["content-type"] = "text/html"
       page("sign_in", title: "Sign In")
