@@ -2,6 +2,8 @@
 
 module Relay::Routes
   class ListModels < Base
+    prepend Hooks::RequireUser
+
     ##
     # Returns the chat-capable models for the provider
     # @return [Array]

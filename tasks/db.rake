@@ -23,6 +23,11 @@ namespace :db do
     Sequel::Migrator.run(Relay::DB, Relay.migrations_dir, target: version - 1)
   end
 
+  desc "Seed the database with initial data"
+  task :seed => [:migrate] do
+    load File.join(Relay.root, "db/seeds.rb")
+  end
+
   desc "Print the current migration version"
   task :version do
     puts version

@@ -32,6 +32,12 @@ module Relay::Routes
     end
 
     ##
+    # @return [Relay::Models::User, nil]
+    def user
+      @user
+    end
+
+    ##
     # @return [String]
     #  Returns the root path
     def root
@@ -43,6 +49,13 @@ module Relay::Routes
     # @return [Hash]
     def params
       request.params
+    end
+
+    ##
+    # @return [Roda::RodaRequest]
+    #  Alias the request object as `r` to match Roda route blocks.
+    def r
+      request
     end
 
     ##

@@ -2,10 +2,10 @@
   <div class="flex flex-col gap-3">
     <span class="label">MCP</span>
     <ul>
-      <% Relay.mcp.stdio.each do |mcp| %>
+      <% stdio.each do |tool| %>
         <li class="py-2 first:pt-0 last:pb-0">
           <div class="flex items-center justify-between gap-3">
-            <div class="theme-strong min-w-0 text-sm font-semibold tracking-tight"><%= mcp.name %></div>
+            <div class="theme-strong min-w-0 text-sm font-semibold tracking-tight"><%= tool.name %></div>
             <div class="group relative shrink-0">
               <button type="button" class="detail-button">
                 Details
@@ -16,7 +16,7 @@
                 </div>
                 <div class="theme-divider my-2"></div>
                 <div class="tooltip text-sm leading-6">
-                  <%= mcp.description %>
+                  <%= tool.description %>
                 </div>
               </div>
             </div>
@@ -24,6 +24,10 @@
         </li>
       <% end %>
     </ul>
-    <span class="theme-muted text-[11px]"><%= Relay.mcp.size %> servers available</span>
+    <% if stdio.empty? %>
+      <span class="theme-muted text-[11px]">No servers available</span>
+    <% else %>
+      <span class="theme-muted text-[11px]"><%= stdio.size %> servers available</span>
+    <% end %>
   </div>
 </aside>

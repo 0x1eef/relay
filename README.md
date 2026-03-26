@@ -53,10 +53,15 @@ are optional for the current local setup.
 **Setup**
 
 The following commands should get you setup with a local instance of Relay
-once the requirements mentioned above are met:
+once the requirements mentioned above are met. The `db/seeds.rb` file
+creates a default user with email `0x1eef@hardenedbsd.org` and
+password `relay`. That account can be used to sign in locally, or
+change the seeded values in [`db/seeds.rb`](./db/seeds.rb) to something
+else before running `bundle exec rake db:seed`:
 
     bundle install
     bundle exec rake db:setup
+    bundle exec rake db:seed
     bundle exec rake dev:start
 
 **Secrets**
@@ -159,6 +164,7 @@ The codebase is organized by responsibility:
 - `app/prompts` contains system prompt
 - `app/models` contains Sequel models
 - `app/routes` contains route classes and WebSocket handlers
+- `app/routes/hooks` contains reusable route hooks
 - `app/views` contains HTML templates and partials
 - `app/workers` contains Sidekiq workers
 - `db/` contains database configuration and migrations
@@ -186,6 +192,41 @@ end
 r.on "some-route" do
   r.is do
     SomeRoute.new(self).call
+  end
+end
+```
+
+**Hooks**
+
+Routes can also be composed with hooks. A hook is an ordinary Ruby
+module, usually stored under `app/routes/hooks`, that is prepended onto
+a route class.
+
+Hooks are named as verbs that describe the behavior they enforce, such
+as `RequireUser`.
+
+They behave like lightweight before filters, but stay in plain Ruby.
+Each hook typically defines `call`, performs its setup or guard logic,
+and then calls `super` to continue to the next prepended hook or, once
+no hooks remain, the route itself:
+
+```ruby
+module Relay::Routes::Hooks
+  module RequireUser
+    def call
+      @user = Relay::Models::User[session["user_id"]]
+      @user.nil? ? r.redirect("/sign-in") : super
+    end
+  end
+end
+
+module Relay::Routes
+  class ChatPage < Base
+    prepend Hooks::RequireUser
+
+    def call
+      page("chat", title: "Relay")
+    end
   end
 end
 ```

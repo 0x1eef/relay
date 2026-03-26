@@ -1,0 +1,45 @@
+<main class="auth-shell app-shell min-h-screen px-4 py-6 sm:px-6">
+  <div class="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-md items-center justify-center">
+    <section class="auth-panel w-full px-6 py-8 sm:px-8">
+      <div class="w-full space-y-8">
+        <a
+          href="https://www.youtube.com/watch?v=CyzdOtyYnng"
+          target="_blank"
+          rel="noreferrer noopener"
+          aria-label="Relay home"
+          class="block border-b pb-6 text-center"
+          style="border-color: var(--theme-panel-border);"
+        >
+          <img
+            class="mx-auto max-h-14 w-auto max-w-[10rem] rounded-2xl shadow-sm"
+            src="/images/relay.png"
+            alt="Relay"
+          >
+        </a>
+
+        <div class="space-y-2 text-center">
+          <p class="label">Relay</p>
+          <p class="mx-auto max-w-xs text-sm leading-6 text-[color:var(--theme-muted)]">
+            Welcome to relay
+          </p>
+        </div>
+
+        <form class="space-y-5" method="post" action="#">
+          <div class="space-y-2.5">
+            <label class="label" for="email">Email</label>
+            <input class="field auth-field" id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email">
+          </div>
+
+          <div class="space-y-2.5">
+            <label class="label" for="password">Password</label>
+            <input class="field auth-field" id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password">
+          </div>
+
+          <button class="auth-button" type="submit">
+            Sign in
+          </button>
+        </form>
+      </div>
+    </section>
+  </div>
+</main>

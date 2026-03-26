@@ -2,6 +2,8 @@
 
 module Relay::Routes
   class ChatPage < Base
+    prepend Hooks::RequireUser
+
     def call
       set_content_type
       set_session
@@ -20,4 +22,3 @@ module Relay::Routes
     end
   end
 end
-

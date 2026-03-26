@@ -21,6 +21,16 @@ class Relay::Router < Roda
       ChatPage.new(self).call
     end
 
+    r.is "sign-in" do
+      r.get do
+        SignInPage.new(self).call
+      end
+
+      r.post do
+        SignIn.new(self).call
+      end
+    end
+
     r.get true do
       r.redirect "/"
     end

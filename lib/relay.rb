@@ -10,7 +10,11 @@ module Relay
   # @return [LLM::Object]
   def self.mcp
     path = File.join(config_dir, "mcp.yml")
-    @mcp ||= LLM::Object.from YAML.safe_load_file(path)
+    if File.readable?(path)
+      @mcp ||= LLM::Object.from YAML.safe_load_file(path)
+    else
+      @mcp ||= LLM::Object.from(stdio: [])
+    end
   end
 
   ##
