@@ -56,10 +56,17 @@ module Relay::Models
     end
 
     ##
-    # @return [LLM::Buffer<LLM::Message>]
-    #  Returns the messages in the current context
+    # @note
+    #  This method excludes tool calls and system messages.
+    #  It is safe to render in the UI.
+    # @return [Array<Hash>]
+    #  Returns persisted user and assistant messages
     def messages
-      session.messages
+      session.messages.filter_map do |message|
+        next if message.tool_call?
+        next unless message.user? || message.assistant?
+        {role: message.role.to_sym, content: message.content.to_s}
+      end
     end
 
     ##

@@ -14,7 +14,8 @@ class Relay::Routes::Websocket
     #  The current context
     # @return [void]
     def on_connect(conn, llm, ctx, params)
-      write(conn, fragment(:status, status: "Ready", cost: "$0.00", context_window: context_window(ctx)))
+      vars[:messages] = ctx.messages
+      write(conn, fragment(:status, status: "Ready", cost: format_cost(ctx.cost), context_window: context_window(ctx)))
       while (message = conn.read)
         read conn, ctx, parse_message(message), params
       end
