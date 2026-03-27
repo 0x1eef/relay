@@ -2,6 +2,8 @@
 
 module Relay::Routes
   class Settings::SetModel < Base
+    prepend Relay::Hooks::RequireUser
+
     def call
       set_model
       partial("fragments/settings/set_model", locals:)
@@ -14,7 +16,7 @@ module Relay::Routes
     end
 
     def locals
-      {models: cache.models}
+      {user:, models: cache.models, messages: ctx.messages}
     end
   end
 end

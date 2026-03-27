@@ -2,6 +2,8 @@
 
 module Relay::Routes
   class Settings::SetProvider < Base
+    prepend Relay::Hooks::RequireUser
+
     ##
     # Changes the active provider
     # @return [String]
@@ -32,7 +34,7 @@ module Relay::Routes
     # @return [Hash]
     #   Returns template locals
     def locals
-      {models: cache.models}
+      {user:, models: cache.models, messages: ctx.messages}
     end
 
     ##
