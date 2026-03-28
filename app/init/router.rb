@@ -70,5 +70,13 @@ module Relay
         end
       end
     end
+
+    ##
+    # @param [String] text
+    # @return [String]
+    #  Renders markdown to HTML
+    def markdown(text)
+      Relay.markdown(text)
+    end
   end
 end
