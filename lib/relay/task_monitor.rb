@@ -49,6 +49,7 @@ class Relay::TaskMonitor
         break(@tasks.size - 1)
       end
     rescue Chan::WaitReadable
+      sleep 0.05
       retry
     end
   end
