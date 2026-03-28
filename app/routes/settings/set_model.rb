@@ -16,7 +16,7 @@ module Relay::Routes
     end
 
     def locals
-      {user:, models: cache.models, messages: ctx.messages}
+      {user:, models: cache.models}
     end
   end
 end

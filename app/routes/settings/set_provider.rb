@@ -34,7 +34,7 @@ module Relay::Routes
     # @return [Hash]
     #   Returns template locals
     def locals
-      {user:, models: cache.models, messages: ctx.messages}
+      {user:, models: cache.models}
     end
 
     ##

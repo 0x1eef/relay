@@ -1,6 +1,6 @@
-<div id="providers-control" class="flex flex-col gap-2" hx-swap-oob="outerHTML">
+<div id="providers-control" class="flex flex-col gap-2">
   <span class="label">Provider</span>
-  <select name="provider" class="select-field" hx-post="/settings/set-provider" hx-trigger="change from:select">
+  <select name="provider" class="select-field" hx-post="/settings/set-provider" hx-target="#models-control" hx-swap="outerHTML" hx-trigger="change from:select">
     <option <%= "selected" if session["provider"] == "deepseek" %> value="deepseek">DeepSeek</option>
     <option <%= "selected" if session["provider"] == "google" %> value="google">Google</option>
     <option <%= "selected" if session["provider"] == "openai" %> value="openai">OpenAI</option>
