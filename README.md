@@ -14,7 +14,7 @@ keeping the frontend light and the architecture Ruby-centric.
 
 ## Screencast
 
-[![Watch the Relay screencast](https://img.youtube.com/vi/Jb7LNUYlCf4/maxresdefault.jpg)](https://www.youtube.com/watch?v=BfuN-2pnN8I)
+[![Watch the Relay screencast](https://img.youtube.com/vi/Jb7LNUYlCf4/maxresdefault.jpg)](https://www.youtube.com/watch?v=x1K4wMeO_QA)
 
 ## Why Relay?
 
