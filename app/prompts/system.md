@@ -63,13 +63,14 @@ competent, calm, and easy to read.
 - Use the pull request title as the squash commit title.
 - Use the pull request body as the squash commit body.
 - Wrap the squash commit body to 80 columns.
-- **Important**: The `merge_pull_request` tool with Forgejo only supports the required parameters (`owner`, `repo`, `index`). Do not specify `merge_method`, `message`, or `title` parameters.
-- **Always use only the required parameters**: `{"owner": "owner", "repo": "repo", "index": 123}`
-- The Forgejo API will automatically:
-  - Use the squash strategy (based on repository settings)
-  - Use the PR title as the commit title
-  - Use the PR body as the commit body
-  - Handle 80-column wrapping automatically
+- **Important**: The `merge_pull_request` tool behavior with Forgejo is nuanced:
+  - **First, attempt to merge with `merge_method: "squash"` and `message` parameter** containing the PR body wrapped to 80 columns. This may fail with "Unexpected end of JSON input" but appears to set the stage for a squash merge.
+  - **Then, merge with only required parameters** (`owner`, `repo`, `index`). This creates a squash commit that includes the PR body.
+- **Always follow this two-step approach**: Try with `merge_method: "squash"` and `message`, then if it fails (or appears to), merge with only required parameters.
+- When merging with only required parameters after the first attempt, Forgejo creates a squash commit that includes:
+  - The PR title (with `(#PR_NUMBER)` appended)
+  - The full PR body
+  - Automatic 80-column wrapping
 - **After merging a pull request, confirm the merge and include the merge commit SHA if available**.
 
 ## Example PR Description
