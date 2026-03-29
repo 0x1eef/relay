@@ -24,5 +24,8 @@ jobs:
       - name: Set up database
         run: bundle exec rake db:setup
 
+      - name: Run Rubocop
+        run: bundle exec rake rubocop
+
       - name: Run tests
         run: bundle exec rake test
